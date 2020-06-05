@@ -8,7 +8,6 @@ javascript: (function () {
         if (!comment) return;
         comments.push(comment);
         if (Math.abs(val) >= 7) {
-            console.log(val);
             if (index) {
                 comments[index - 1].show();
             }
