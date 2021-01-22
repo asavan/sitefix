@@ -24,49 +24,32 @@ javascript:(async () => {
         }
     }
 
-    function getAmount(strValue) {
-        if (strValue) {
-            const mySubString = strValue.substring(
-                strValue.lastIndexOf("-") + 1,
-                strValue.lastIndexOf(".")
-            );
-            return parseInt(mySubString.replace(/\s/g, ''));
-        }
-        return 0;
+    function getAmount(str) {
+        return str ? -parseFloat(str.replace(/\s/g, '')) : 0;
     }
 
-    function getCashBackValue(str) {
-        if (!str) return 0;
-        let lastIndex = str.lastIndexOf(".");
-        if (lastIndex < 0) {
-            lastIndex = str.length;
-        }
-        const mySubString = str.substring(
-            str.lastIndexOf("+") + 1,
-            lastIndex
-        );
-        return parseInt(mySubString.replace(/\s/g, ''));
+    function mainLogic() {
+        const allLines = Array.from(document.querySelector('table.statement').querySelector('tbody').querySelectorAll('tr'));
+        const nonFood = allLines.filter(line => {
+            const amount = getAmount(line.querySelector(".negative")?.innerText);
+            const cashBack = -getAmount(line.querySelector(".cashback")?.childNodes[2].nodeValue);
+            return cashBack * 20 < amount;
+        });
+        nonFood.forEach(line => {
+            const amount = getAmount(line.querySelector(".negative")?.innerText);
+            const cashBack = -getAmount(line.querySelector(".cashback")?.childNodes[2].nodeValue);
+            console.log(line.querySelector(".counterparty-name").innerText, amount, cashBack);
+        });
+        let sumNonFood = 0;
+        nonFood.forEach(line => sumNonFood += getAmount(line.querySelector(".negative")?.innerText));
+        const spisanie = getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
+        const reserved = getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
+        const all = spisanie + reserved;
+        printResult(spisanie, sumNonFood);
+        console.log("reserved", reserved);
+        printResult(all, sumNonFood);
+        printResult(spisanie + 1129, sumNonFood + 1129);
     }
 
-    const allLines = Array.from(document.querySelector('table.statement').querySelector('tbody').querySelectorAll('tr'));
-    const notDeliveryClub = allLines.filter(line => line.querySelector(".counterparty-name").innerText !== "Delivery Club");
-    const onlyNegative = notDeliveryClub.filter(line => line.querySelector(".negative"));
-    /* TODO: filter other cafe here */
-
-    const nonFood = allLines.filter(line => {
-        const amount = getAmount(line.querySelector(".negative")?.innerText);
-        const cashBack = getCashBackValue(line.querySelector(".cashback")?.childNodes[2].nodeValue);
-        return cashBack * 50 < amount;
-    });
-    nonFood.forEach(line => {
-        const amount = getAmount(line.querySelector(".negative")?.innerText);
-        const cashBack = getCashBackValue(line.querySelector(".cashback")?.childNodes[2].nodeValue);
-        console.log(line.querySelector(".counterparty-name").innerText, amount, cashBack);
-    });
-    let sumNonFood = 0;
-    nonFood.forEach(line => sumNonFood += getAmount(line.querySelector(".negative")?.innerText));
-    const spisanie = getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
-    const reserved = getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
-    const all = spisanie + reserved;
-    printResult(all, sumNonFood + reserved);
+    mainLogic();
 })();
