@@ -25,30 +25,28 @@ javascript:(async () => {
     }
 
     function getAmount(str) {
-        return str ? -parseFloat(str.replace(/\s/g, '')) : 0;
+        return str ? parseFloat(str.replace(/\s/g, '')) : 0;
     }
 
-    function mainLogic() {
+    function mainLogic(addition = 0) {
         const allLines = Array.from(document.querySelector('table.statement').querySelector('tbody').querySelectorAll('tr'));
         const nonFood = allLines.filter(line => {
-            const amount = getAmount(line.querySelector(".negative")?.innerText);
-            const cashBack = -getAmount(line.querySelector(".cashback")?.childNodes[2].nodeValue);
-            return cashBack * 20 < amount;
+            const amount = -getAmount(line.querySelector(".negative")?.innerText);
+            const cashBack = getAmount(line.querySelector(".cashback")?.childNodes[2].nodeValue);
+            const keep = cashBack * 20 < amount;
+            if (keep) {
+                console.log(line.querySelector(".counterparty-name").innerText, amount, cashBack);
+            }
+            return keep;
         });
-        nonFood.forEach(line => {
-            const amount = getAmount(line.querySelector(".negative")?.innerText);
-            const cashBack = -getAmount(line.querySelector(".cashback")?.childNodes[2].nodeValue);
-            console.log(line.querySelector(".counterparty-name").innerText, amount, cashBack);
-        });
-        let sumNonFood = 0;
-        nonFood.forEach(line => sumNonFood += getAmount(line.querySelector(".negative")?.innerText));
-        const spisanie = getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
+
+        const sumNonFood = nonFood.reduce((a, line) => a + getAmount(line.querySelector(".negative")?.innerText), 0);
+        const debit = getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
         const reserved = getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
-        const all = spisanie + reserved;
-        printResult(spisanie, sumNonFood);
+        printResult(debit + addition, sumNonFood + addition);
         console.log("reserved", reserved);
-        printResult(all, sumNonFood);
-        printResult(spisanie + 1129, sumNonFood + 1129);
+        const all = debit + reserved;
+        printResult(all + addition, sumNonFood + addition);
     }
 
     mainLogic();
