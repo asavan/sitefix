@@ -40,11 +40,10 @@ javascript:(async () => {
             return keep;
         });
 
-        const sumNonFood = nonFood.reduce((a, line) => a + getAmount(line.querySelector(".negative")?.innerText), 0);
-        const debit = getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
-        const reserved = getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
-        printResult(debit + addition, sumNonFood + addition);
-        console.log("reserved", reserved);
+        const sumNonFood = nonFood.reduce((a, line) => a - getAmount(line.querySelector(".negative")?.innerText), 0);
+        const debit = -getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
+        const reserved = -getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
+        console.log("reserved", reserved, "spent", debit, "non-food", sumNonFood);
         const all = debit + reserved;
         printResult(all + addition, sumNonFood + addition);
     }
