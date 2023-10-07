@@ -28,7 +28,7 @@ javascript:(async () => {
         return str ? parseFloat(str.replace(/\s/g, '')) : 0;
     }
 
-    function mainLogic(addition = 0) {
+    function mainLogic(nonFoodInReserved = 0) {
         const allLines = Array.from(document.querySelector('table.statement').querySelector('tbody').querySelectorAll('tr'));
         const nonFood = allLines.filter(line => {
             const amount = -getAmount(line.querySelector(".negative")?.innerText);
@@ -43,9 +43,9 @@ javascript:(async () => {
         const sumNonFood = nonFood.reduce((a, line) => a - getAmount(line.querySelector(".negative")?.innerText), 0);
         const debit = -getAmount(document.querySelector('#debit-turnover-row')?.querySelector(".negative")?.innerText);
         const reserved = -getAmount(document.querySelector('#reserved')?.querySelector(".negative")?.innerText);
-        console.log("reserved", reserved, "spent", debit, "non-food", sumNonFood);
         const all = debit + reserved;
-        printResult(all + addition, sumNonFood + addition);
+        console.log("reserved", reserved, "spent", debit, "non-food", sumNonFood, "all", all);
+        printResult(all, sumNonFood + nonFoodInReserved);
     }
 
     mainLogic();
