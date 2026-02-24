@@ -1,14 +1,13 @@
-javascript: (function(count) {
-    function getFullUrl(id) {
-        return "https://www.youtube.com/watch?v=" + id;
-    }
+javascript: (function (count, selector) {
+    const getFullUrl = id => "https://www.youtube.com/watch?v=" + id;
+    const getShortsUrl = id => "https://www.youtube.com/shorts/" + id;
 
-    function getIdFromUrl(line) {
+    const getIdFromUrl = line => {
         const url = new URL(line);
+        if (url.hostname.includes("youtu.be")) {
+            return url.pathname.replace("/", "");
+        }
         if (!url.hostname.includes("youtube.com")) {
-            if (url.hostname.includes("youtu.be")) {
-                return url.pathname.replace("/", "");
-            }
             return "";
         }
 
@@ -17,15 +16,15 @@ javascript: (function(count) {
             return id;
         }
         return url.pathname.replace("/shorts/", "");
-    }
+    };
 
-    function cleanUrlYT(text) {
-        if (text.includes("shorts")) {
-            const url = new URL(text);
-            return url.origin + url.pathname;
+    const cleanUrlYT = text => {
+        if (text.includes("/shorts/")) {
+            return getShortsUrl(getIdFromUrl(text));
         }
         return getFullUrl(getIdFromUrl(text));
-    }
-    const arr = [...document.querySelectorAll("ytd-playlist-video-renderer a#video-title")].slice(-count).map(e => cleanUrlYT(e.href));
+    };
+
+    const arr = [...document.querySelectorAll(selector)].slice(-count).map(e => cleanUrlYT(e.href));
     console.log(arr.join("\n"));
-})(20);
+})(20, "ytd-playlist-video-renderer a#video-title");
